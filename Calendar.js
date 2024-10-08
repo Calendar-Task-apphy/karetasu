@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './Calendar.css';
 
-function Calendar() {
+function Calendar({ setSelectedDate }) {  // setSelectedDate を受け取る
     const [currentDate, setCurrentDate] = useState(new Date());
     
     const today = new Date();
@@ -16,7 +16,6 @@ function Calendar() {
     const months = ["January", "February", "March", "April", "May", "June", 
                     "July", "August", "September", "October", "November", "December"];
 
-    // 前月の日付を含むカレンダー配列の生成
     let days = [];
 
     // 前月の日付を追加
@@ -56,10 +55,9 @@ function Calendar() {
         );
     }
 
-    // 日付クリック時の処理（To-Doリスト表示）
+    // 日付クリック時の処理（TaskManagerへ日付を渡す）
     const handleDateClick = (date) => {
-        alert(`Selected Date: ${date}`);
-        // TODO: To-Doリスト表示機能を実装
+        setSelectedDate(new Date(currentYear, currentMonth, date));  // 選択された日付をセット
     };
 
     // 月移動の処理

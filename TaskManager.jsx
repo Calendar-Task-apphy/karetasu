@@ -1,73 +1,65 @@
-import React, { useState } from "react";
+// TaskManager.js
+import React, { useState } from 'react';
 
-
-// TaskManagerコンポーネント
 const TaskManager = ({ selectedDate }) => {
-  const [tasks, setTasks] = useState([]); // タスクの状態
-  const [taskInput, setTaskInput] = useState(""); // 入力されたタスク
+  const [tasks, setTasks] = useState([]);  // タスクの状態
 
-  // タスクを追加する関数
-  const addTask = () => {
-    if (tasks.length >= 6) {
-      alert("タスクは6個までしか追加できません。");
-      return;
-    }
-
-    if (taskInput.trim() !== "") {
-      setTasks([...tasks, { text: taskInput, completed: false }]);
-      setTaskInput("");
+  const handleAddTask = (newTask) => {
+    if (tasks.length < 6) {  // 要件1: 6個までタスクを登録可能
+      setTasks([...tasks, { text: newTask, completed: false }]);
     }
   };
 
-  // タスクを削除する関数
-  const deleteTask = (index) => {
-    const newTasks = [...tasks];
-    newTasks.splice(index, 1);
-    setTasks(newTasks);
+  const handleToggleTaskCompletion = (index) => {
+    const updatedTasks = tasks.map((task, i) => 
+      i === index ? { ...task, completed: !task.completed } : task
+    );
+    setTasks(updatedTasks);
   };
 
-  // タスクの完了状態をトグルする関数
-  const toggleTaskCompletion = (index) => {
-    const newTasks = [...tasks];
-    newTasks[index].completed = !newTasks[index].completed;
-    setTasks(newTasks);
+  const handleDeleteTask = (index) => {
+    const updatedTasks = tasks.filter((task, i) => i !== index);
+    setTasks(updatedTasks);
   };
 
   return (
-    <div style={{ margin: "20px" }}>
-      <h3>タスク一覧 ({selectedDate ? selectedDate : "日付を選択してください"})</h3>
-      <input
-        type="text"
-        value={taskInput}
-        onChange={(e) => setTaskInput(e.target.value)}
-        placeholder="タスクを入力してください"
+    <div>
+      <h2>{selectedDate}のタスクリスト</h2>  {/* 選択された日付に対応したTo-Doリストのタイトル */}
+      
+      {/* タスク入力フォーム */}
+      <input 
+        type="text" 
+        placeholder="タスクを入力"
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && e.target.value !== '') {
+            handleAddTask(e.target.value);  // タスク追加
+            e.target.value = '';  // 入力フォームをクリア
+          }
+        }}
       />
-      <button onClick={addTask}>タスクを追加</button>
 
+      {/* タスクの表示 */}
       <ul>
         {tasks.map((task, index) => (
-          <li key={index} style={{ display: "flex", alignItems: "center" }}>
-            <input
-              type="checkbox"
-              checked={task.completed}
-              onChange={() => toggleTaskCompletion(index)}
+          <li key={index}>
+            <input 
+              type="checkbox" 
+              checked={task.completed} 
+              onChange={() => handleToggleTaskCompletion(index)} 
             />
-            <span
-              style={{
-                textDecoration: task.completed ? "line-through" : "none",
-                marginLeft: "10px",
-              }}
-            >
+            <span style={{ textDecoration: task.completed ? 'line-through' : 'none' }}>
               {task.text}
             </span>
-            <button onClick={() => deleteTask(index)}>削除</button>
+            <button onClick={() => handleDeleteTask(index)}>削除</button>
           </li>
         ))}
       </ul>
 
+      {/* 6個以上タスクを追加できない場合の警告 */}
       {tasks.length >= 6 && <p>タスクは6個までしか追加できません。</p>}
     </div>
   );
 };
 
 export default TaskManager;
+
